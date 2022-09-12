@@ -23,7 +23,7 @@ def load_config(config_file):
             file_contents = f.read()
             return yaml.full_load(file_contents)
     except:
-        log('Config file not found. Please run '+CWHITE+CBOLD+CITALIC+'levi --configure'+CEND+CRED+' before using this logger.', 'error')
+        log('Config file (~/.levy/config.yml) not found. Please run '+CWHITE+CBOLD+CITALIC+'levi --configure'+CEND+CRED+' before using this logger.', 'error')
         return None
 
 def prompt_question(question, key):
