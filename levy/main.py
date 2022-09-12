@@ -38,7 +38,7 @@ def run(args):
                 args.end = str(datetime.today()).split(" ")[0].replace("-", "/")
             args.start = int(datetime.timestamp(datetime.strptime(args.start, '%Y/%m/%d')))
             args.end = int(datetime.timestamp(datetime.strptime(args.end, '%Y/%m/%d')))
-            date = 'from date {} to {}'.format(args.start, args.end)
+            date = 'from date {} to {}'.format(date_format('%Y-%m-%d', args.start), date_format('%Y-%m-%d', args.end))
             commits = [x for x in repo.iter_commits(config['branch']) if x.author.name == args.user and date_format('%Y-%m-%d', int(args.start)) <= date_format('%Y-%m-%d', x.committed_date) <= date_format('%Y-%m-%d', int(args.end))]
         log('Getting {} logs for {} for {}'.format(CBEIGE+CBOLD+args.track+CEND, CBEIGE+CBOLD+args.user+CEND, date))
         logger = Queue()
@@ -63,7 +63,7 @@ def run(args):
             os.mkdir(CONFIG_PATH)
         with open(CONFIG_PATH+"config.yml", "w") as f:
             f.write(yaml.dump(options))
-        log("Finished generating config file. Please try to run the script again using "+ CITALIC+CBOLD+"levi --user {author} --today/--all/--start {date in YYYY/M/D format}")
+        log("Finished generating config file. Please try to run the script again using "+ CITALIC+CBOLD+"levy --user {author} --today/--all/--start {date in YYYY/M/D format}")
 
 def main():
     parser = ArgumentParser()
