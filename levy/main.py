@@ -44,14 +44,15 @@ def run(args):
         logger = Queue()
         for x in commits:
             files = process_files(x.stats.files, args.track)
+            message = x.message
             commitid = x.hexsha
             for idx, onefile in enumerate(files):
-                logger.add_row('{}_{}'.format(commitid, idx), args.user, onefile, date_format('%Y-%m-%d', x.committed_date))
+                logger.add_row('{}_{}'.format(commitid, idx), args.user, onefile, message, date_format('%Y-%m-%d', x.committed_date))
         if args.export != None:
             filename = args.export
         else:
             filename = "./levy_{}_gitlogs.csv".format(args.user)
-        logger.export_to_csv(filename)
+        logger.export_to_csv(filename, args.unique)
     else:
         log("Generating config.yml")
         options = {}
@@ -74,7 +75,7 @@ def main():
         ['today', "flag to set the log to get only today's commit"],
         ['all', 'flag to specify the logger to pull all commits till today'],
         ['configure', 'specify the settings for this script'],
-        ['update', 'update the script to latest version']
+        ['unique', 'get only unique files per day in the log'],
     ]
 
     for controller, helper in controllers:

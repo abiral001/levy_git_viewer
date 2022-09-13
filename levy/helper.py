@@ -54,16 +54,17 @@ def process_files(stats, fileToTrack, onlyName = True):
 class Queue:
     def __init__(self):
         self.__data__ = list()
-        self.__colname__ = ['CommitID', 'Author', 'FileName', 'Date']
+        self.__colname__ = ['CommitID', 'Author', 'FileName', 'Message', 'Date']
 
     def get_columns(self):
         return self.__colname__
 
-    def add_row(self, commitid, author, filename, date):
-        self.__data__.append((commitid, author, filename, date))
+    def add_row(self, commitid, author, filename, message, date):
+        self.__data__.append((commitid, author, filename, message, date))
 
-    def export_to_csv(self, filename):
+    def export_to_csv(self, filename, unique):
         df = pd.DataFrame(self.__data__, columns = list(self.__colname__))
-        df = df.drop_duplicates(subset=['FileName', 'Date'])
+        if unique:
+            df = df.drop_duplicates(subset=['FileName', 'Date'])
         log("Exporting to {}".format(filename))
         df.to_csv(filename, index = False)
