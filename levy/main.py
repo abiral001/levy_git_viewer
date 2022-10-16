@@ -3,12 +3,16 @@ from datetime import datetime
 
 from .styles import *
 from .helper import *
+from .create import *
 
 import git
 import os
 
 def run(args):
     if not args.configure:
+        if args.create:
+            createPlugin(args)
+            return
         if args.user == None:
             log("User is empty", 'error')
             return
@@ -76,6 +80,8 @@ def main():
         ['all', 'flag to specify the logger to pull all commits till today'],
         ['configure', 'specify the settings for this script'],
         ['unique', 'get only unique files per day in the log'],
+        ['create', 'GREPSR specific; creates a template for crawler'],
+        ['deploy', 'GREPSR specific; pushes the crawler to the main repo']
     ]
 
     for controller, helper in controllers:
@@ -85,6 +91,8 @@ def main():
     parser.add_argument('--start', type=str, help = 'specify which date should the logger start logging information')
     parser.add_argument('--end', type=str, help = 'specify which date should the logger stop logging information')
     parser.add_argument('-x', '--export', type=str, help = 'specify the name of the file to export the generated csv')
-
+    parser.add_argument('--source', type=str, help = 'specify the name of the file to use to generate plugins')
+    parser.add_argument('--dir', type=str, help='specity the directory to create the plugins in')
+    
     args = parser.parse_args()
     run(args)

@@ -1,0 +1,91 @@
+2 no of plugin is to be generated
+<?php
+/**
+ * Name: example_com
+ * Description: example_com
+ * PID: 10124 force
+ */
+// JIRA TICKET: something
+//ini_set('memory_limit', '256M');
+
+class example_com extends Vtx_Service_Plugin
+{
+    private $colHeaders;
+    protected $baseUrl;
+    protected $domainUrl;
+    private $cache;
+
+    public function __construct()
+    {
+        parent::__construct();
+     
+        $this->colHeaders = array(
+            'sn', 'name', 'title', 'price'
+        );
+        $this->baseUrl = "www.example.com";
+        $this->domainUrl = "www.example.com";        
+    }
+
+    public function mainController($params) {
+        $proc = new Vtx_Service_Multi_Processor($this, __DIR__."/config.json");
+        $totalProcesses = %TOTALPROCESSES%;
+        $batch = time();
+        /*
+        while (!$proc->spawnProcess(array($params, 'batch' => $batch), array('mem' => 128))) {
+            sleep(3);
+        }
+        */
+        $proc->waitTasksCompletion();
+        return $this;
+    }
+
+    private function newSession()
+    {
+        $this->resetCurl(true);
+        //$this->resetHolaSuperProxy();
+        $this->useProxy = true;
+
+        // backend v2: turn on this for backend version 2 and turn off the proxy line below
+        // $this->enableHola("US");
+        // $this->setHolaZone("dc_shared");
+
+        // backend v3
+        // $this->enableProxy("HOLA", "US", "dc_shared");
+
+        $this->setHeaders('Accept-Encoding', 'gzip, deflate, br');
+        $this->setHeaders('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
+        $this->setHeaders('Accept-Language', 'en-US,en;q=0.5');
+        $this->setHeaders('Connection', 'keep-alive');
+        $this->setHeaders('Upgrade-Insecure-Requests', '1');
+        $this->setHeaders('User-Agent', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36');
+
+        //$this->setCurlOption(CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
+        //$this->setCurlOption(CURLOPT_CONNECTTIMEOUT, 180);
+        //$this->setCurlOption(CURLOPT_TIMEOUT, 180);
+    }
+
+    public function main($params)
+    {
+	    $this->dataSet->setPageName(get_class($this) .'_%s' , [ date('Ymd') ]);
+        $this->dataSet->setColHeaders($this->colHeaders);
+	    $this->newSession();
+	    $this->switchProxy();
+        $this->cache = new Vtx_Service_Data_Cache(__CLASS__, $params['batch']);
+
+        //$this->loadDocument($this->baseUrl);
+
+        return $this;
+    }
+
+    public function addRow($data) {
+        if ($this->cache->checkIfNew($data['id'])) {
+            $arr = $this->dataSet->getEmptyRow();
+            %ARRENTRY%
+            if (APPLICATION_ENV == "tst") {
+                print_r($arr);
+            } else {
+                $this->dataSet->addRow($arr);
+            }
+        }
+    }
+}

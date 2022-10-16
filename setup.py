@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='levy-gitlogger',
-    version='0.1.3',
+    version='0.3.0',
     description='local git commits to csv file logger',
     url='https://github.com/abiral001/levy_git_viewer',
     author="abiralp",
